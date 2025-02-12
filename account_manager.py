@@ -11,6 +11,9 @@ from assist_func import clear_csv, del_session_files, del_user_without_username
 from warm_up.main_warm import warm_up
 from sessions_dir.add_by_session import add_account_by_session
 
+import os
+import time
+from colorama import init, Fore, Back, Style
 
 async def check_restriction(client: TelegramClient) -> TelegramClient or None:
     async with client:
@@ -138,24 +141,78 @@ async def filter_banned():
     return path_list
 
 
+
+# Initialize colorama
+init(autoreset=True)
+
+
 async def main_menu():
-    what_to_do = input('Menu:\n1.Add account\n2.View all accounts\n3.Change proxy/password/restriction'
-                       '\n4.Test auth\n5.Delete account\n6.Delete duplicates from parsed users\n7.Warm up mode\n'
-                       '8.Delete banned accounts\n9.Delete from users.csv users without username\n10.Quit \n - ')
-    while what_to_do != '10':
-        if what_to_do == '1':
+    print(Fore.LIGHTRED_EX + r"""
+            ⠀⠀⠀⠀⠀⠀⢀⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣤⡀⠀⠀⠀⠀⠀⠀
+            ⠀⠀⠀⠀⠀⣰⠟⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⡻⣧⠀⠀⠀⠀⠀
+            ⠀⠀⠀⠀⣰⡇⢰⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣇⠘⣧⠀⡀⠀⠀
+            ⠀⠀⠀⣰⡏⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⢸⣧⠀⠀⠀
+            ⠀⠀⢰⠃⢸⠄⠘⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡇⠀⢾⠈⣧⠀⠀
+            ⠀⠀⢸⡄⢸⣄⠀⢳⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡼⠀⢀⡏⢀⣟⠀⠀
+            ⠀⢠⠿⡇⠈⣿⡀⠀⠻⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡞⠁⠀⣽⠇⢀⡟⡆⠀
+            ⠀⢸⠀⢻⠂⠸⣷⡀⠀⠙⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠞⠀⢀⣼⡟⠀⡺⠀⣹⠀
+            ⠀⣼⡃⢸⣷⠄⢹⣿⣆⠸⣏⠳⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠞⢡⡇⢀⣿⣯⠀⣴⡗⠀⣿⡀
+           ⣼ """ + Fore.LIGHTMAGENTA_EX + r"""                                              ⣿⡀
+           ⢸         ██╗      █████╗ ███████╗██╗   ██╗     ⢸
+           ⢸         ██║     ██╔══██╗██╔════╝╚██╗ ██╔╝     ⢸
+           ⢸         ██║     ███████║███████╗ ╚████╔╝      ⢸
+           ⢸         ██║     ██╔══██║╚════██║  ╚██╔╝       ⢸
+           ⢸         ███████╗██║  ██║███████║   ██║        ⢸
+           ⢸         ╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝        ⢸""" + Fore.LIGHTRED_EX + r"""
+            ⢸⡇⢷⣄⠹⣷⣬⣿⣿⡛⠻⣆⠀⠙⠢⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡴⠚⠁⢀⡿⠛⣻⡿⢡⣼⠟⢀⡼⠁⡇
+            ⠀⢳⡀⣷⣄⡸⣿⣮⣿⣷⡀⠙⣶⣄⠀⠈⠑⢦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠞⠁⠀⣀⣴⠏⠀⣾⣿⣥⣿⠏⣀⣼⠁⡼⠃
+            ⠀⠈⣯⠈⢿⣦⡘⣿⡄⠙⢦⣀⢽⣿⣿⠶⠄⠀⠹⡄⠀⠀⠀⠀⠀⠀⠀⠀⢠⡞⠁⠠⠶⣾⣿⡿⢁⡴⠛⢁⣼⠁⣴⡿⠋⣸⠇⠀
+            ⠀⠀⢸⠻⣆⠙⣿⣿⣿⣆⠀⢻⣷⣾⣿⣅⠀⠀⠀⣱⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⢀⣽⣷⣾⡟⠀⢀⣾⣿⣿⠋⣐⡾⣻⠀⠀
+            ⠀⠀⠈⢧⡈⢿⣬⣽⣿⣉⠙⢲⣮⣽⡇⠀⠀⢀⡞⠃⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳⡆⠀⠀⢰⣿⣵⡶⠚⢉⣹⣟⣡⣼⠏⣠⠃⠀⠀
+            ⠀⠀⠀⠘⢷⣄⡉⠻⣿⣿⣥⣤⣿⣿⣿⡋⠀⠈⠳⣄⡀⠀⠀⠀⠀⠀⠀⠀⣠⠾⠃⠀⢘⣿⣿⣿⣤⣤⣿⣿⠟⠋⣀⡴⠏⠀⠀⠀
+            ⠀⠀⠀⠀⠀⠈⠙⠒⢬⡿⠋⠀⠀⣘⣿⣷⡟⠀⠀⠀⢳⠀⠀⠀⠀⠀⠀⣸⠁⠀⠀⢘⣾⣿⣇⡀⠀⠈⢻⡯⠔⠚⠉⠀⠀⠀⠀⠀
+            ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠷⢤⡞⠉⠀⣩⣿⣿⣾⠀⠀⠈⢣⠀⠀⠀⠀⣰⠃⠀⡀⢻⣿⣿⣯⡀⠉⠓⡦⠽⠇⠀⠀⠀⠀⠀⠀⠀⠀
+            ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣷⣠⠞⠁⣰⠻⣿⣿⡧⠤⢌⣱⠄⠀⢾⡁⠤⢤⡿⣿⠟⢧⠀⠙⣦⣾⡗⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+            ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣶⣦⣧⣤⣏⣼⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢳⣜⣧⣬⣧⣶⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+            ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⡉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⢉⡉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+""" + Style.RESET_ALL)
+
+
+    while True:
+        print(Fore.GREEN + "╔════════════════════════════════════════╗")
+        print(Fore.GREEN + "║ " + Fore.RED + "🚀 MAIN MENU" + Fore.GREEN + "                           ║")
+        print(Fore.GREEN + "╠════════════════════════════════════════╣")
+        print(Fore.GREEN + "║ " + Fore.CYAN + "[1]" + Fore.WHITE + " Add Account                         ")
+        print(Fore.GREEN + "║ " + Fore.CYAN + "[2]" + Fore.WHITE + " View All Accounts                   ")
+        print(Fore.GREEN + "║ " + Fore.CYAN + "[3]" + Fore.WHITE + " Change Proxy / Password / Restriction ")
+        print(Fore.GREEN + "║ " + Fore.CYAN + "[4]" + Fore.WHITE + " Test Authentication                 ")
+        print(Fore.GREEN + "║ " + Fore.CYAN + "[5]" + Fore.WHITE + " Delete Account                       ")
+        print(Fore.GREEN + "║ " + Fore.CYAN + "[6]" + Fore.WHITE + " Delete Duplicate Users               ")
+        print(Fore.GREEN + "║ " + Fore.CYAN + "[7]" + Fore.WHITE + " Warm-Up Mode                         ")
+        print(Fore.GREEN + "║ " + Fore.CYAN + "[8]" + Fore.WHITE + " Delete Banned Accounts               ")
+        print(Fore.GREEN + "║ " + Fore.CYAN + "[9]" + Fore.WHITE + " Remove Users Without Username        ")
+        print(Fore.GREEN + "║ " + Fore.RED + "[X]" + Fore.WHITE + " Exit                                 ")
+        print(Fore.GREEN + "╚════════════════════════════════════════╝")
+
+        what_to_do = input(Fore.YELLOW + "\n⚡ Select an option: " + Style.BRIGHT)
+
+        if what_to_do.lower() == 'x':  
+            print(Fore.RED + "👋 Exiting... Stay Anonymous.")
+            break  # Exit loop when user chooses X
+
+        elif what_to_do == '1':
             add_account()
         elif what_to_do == '2':
             view_accounts()
         elif what_to_do == '3':
-            view_accounts ()
+            view_accounts()
             prox_pass_res = prox_pass_restriction()
             if prox_pass_res == 'proxy':
                 change_proxy()
             elif prox_pass_res == 'password':
                 change_pass_restriction('password')
             elif prox_pass_res == 'restriction':
-                change_pass_restriction ('restriction')
+                change_pass_restriction('restriction')
         elif what_to_do == '4':
             view_accounts()
             await test_auth()
@@ -164,7 +221,7 @@ async def main_menu():
             delete_account()
         elif what_to_do == '6':
             clear_csv()
-            print('Duplicates deleted')
+            print(Fore.GREEN + "✅ Duplicates deleted!")
         elif what_to_do == '7':
             await warm_up()
         elif what_to_do == '8':
@@ -173,10 +230,63 @@ async def main_menu():
             del_session_files(del_path)
         elif what_to_do == '9':
             del_user_without_username()
-            print('Users without usernames successfully deleted')
-        what_to_do = input ('Menu:\n1. Add account\n2.View all accounts\n3.Change proxy/password/restriction'
-                            '\n4.Test auth\n5.Delete account\n6.Delete duplicates from parsed users\n7.Warm up '
-                            'mode\n8.Delete banned accounts\n9.Delete from users.csv users without username\n10.Quit \n - ')
+            print(Fore.CYAN + "✅ Users without usernames successfully deleted!")
+        else:
+            print(Fore.RED + "❌ Invalid option! Choose wisely, hacker.")
+
+
+
+# from colorama import init, Fore, Style
+# # Initialize colorama
+# init(autoreset=True)
+# async def main_menu():
+#     print(Fore.RED + r"""    
+#                 ________           .___🚩BY:LazyDeveloper⭕___
+#                /  _____/  ____   __| _/
+#               /   \  ___ /  _ \ / __ | 
+#               \    \_\  (  <_> ) /_/ | 
+#                \______  /\____/\____ |
+#                       \/            \/ v:3.0 [PREMIUM]
+    
+#     """)
+#     what_to_do = input('Menu:\n1.Add account\n2.View all accounts\n3.Change proxy/password/restriction'
+#                        '\n4.Test auth\n5.Delete account\n6.Delete duplicates from parsed users\n7.Warm up mode\n'
+#                        '8.Delete banned accounts\n9.Delete from users.csv users without username\n10.Quit \n - ')
+#     while what_to_do != '10':
+#         if what_to_do == '1':
+#             add_account()
+#         elif what_to_do == '2':
+#             view_accounts()
+#         elif what_to_do == '3':
+#             view_accounts ()
+#             prox_pass_res = prox_pass_restriction()
+#             if prox_pass_res == 'proxy':
+#                 change_proxy()
+#             elif prox_pass_res == 'password':
+#                 change_pass_restriction('password')
+#             elif prox_pass_res == 'restriction':
+#                 change_pass_restriction ('restriction')
+#         elif what_to_do == '4':
+#             view_accounts()
+#             await test_auth()
+#         elif what_to_do == '5':
+#             view_accounts()
+#             delete_account()
+#         elif what_to_do == '6':
+#             clear_csv()
+#             print('Duplicates deleted')
+#         elif what_to_do == '7':
+#             await warm_up()
+#         elif what_to_do == '8':
+#             del_path = await filter_banned()
+#             time.sleep(1)
+#             del_session_files(del_path)
+#         elif what_to_do == '9':
+#             del_user_without_username()
+#             print('Users without usernames successfully deleted')
+#         what_to_do = input ('Menu:\n1. Add account\n2.View all accounts\n3.Change proxy/password/restriction'
+#                             '\n4.Test auth\n5.Delete account\n6.Delete duplicates from parsed users\n7.Warm up '
+#                             'mode\n8.Delete banned accounts\n9.Delete from users.csv users without username\n10.Quit \n - ')
 
 
 if __name__ == '__main__':

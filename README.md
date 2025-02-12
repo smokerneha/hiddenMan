@@ -10,9 +10,7 @@
 
 ## Usage via terminal 
 - Open terminal - click win + R and then type cmd.exe
-- ```pip3 install telethon```
-- ```pip3 install TelethonFakeTLS```
-- ```git clone https://github.com/evilbream/TG_adder_with_proxy```
+- ```git clone https://github.com/lazydeveloperr/lazyscript``
 - ```cd Tg_adder_with_proxy``` change directory to downloaded folder.
 - ```exclude_list.txt``` - it'll open exclude_list.txt. If u want to filter users by first name run it and add words. Users with these words in first name will be excluded
 - ```python account_manager.py```  -  To run account manager. Now u can add account(s) w or without proxy, delete account(s), change proxy for the specific account(s), view all accounts and test the ability to log in to account(s)

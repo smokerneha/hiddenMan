@@ -8,9 +8,25 @@ from telethon import errors
 from SQL_support.sql_CRUD import sql_change_something
 import datetime
 from assist_func import get_from_csv
+import os
+import time
+from colorama import init, Fore, Back, Style
 
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
+ascii_art = [
+    f"{Fore.RED}.____       {Fore.YELLOW}_____  {Fore.GREEN}_______________.___. {Fore.CYAN}________  {Fore.MAGENTA}_______________   {Fore.BLUE}____",
+    f"{Fore.RED}|    |     {Fore.YELLOW}/  _  \\ {Fore.GREEN}\\____    /\\__  |   | {Fore.CYAN}\\______ \\ {Fore.MAGENTA}\\_   _____/\\   \\ {Fore.BLUE}/   /",
+    f"{Fore.RED}|    |    {Fore.YELLOW}/  /_\\  \\ {Fore.GREEN} /     /  /   |   | {Fore.CYAN} |    |  \\ {Fore.MAGENTA}|    __)_  \\   Y   {Fore.BLUE}/",
+    f"{Fore.RED}|    |___{Fore.YELLOW}/    |    \\{Fore.GREEN}/     /_  \\____   | {Fore.CYAN} |    `   \\{Fore.MAGENTA}|        \\  \\     {Fore.BLUE}/",
+    f"{Fore.RED}|_______ \\{Fore.YELLOW}____|__  / {Fore.GREEN}_______ \\ / ______| {Fore.CYAN}/_______  /{Fore.MAGENTA}_______  /   \\___/ ",
+    f"{Fore.RED}        \\/{Fore.YELLOW}       \\/  {Fore.GREEN}       \\/ \\/        {Fore.CYAN}        \\/ {Fore.MAGENTA}       \\/           {Style.RESET_ALL}"
+]
 
 class Add_user:
+    for line in ascii_art:
+        print(line)
     def __init__(self, client: TelegramClient):
         self.client = client
 

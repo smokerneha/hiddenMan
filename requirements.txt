@@ -1,2 +1,3 @@
 Telethon==1.28.5
 TelethonFakeTLS
+colorama
